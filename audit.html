@@ -1,0 +1,6 @@
+{% extends "base.html" %}{% from "_macros.html" import table %}
+{% block content %}
+<h3>Audit log (last 100 changes)</h3>
+<p class="text-muted">Filled automatically by a database trigger whenever property, case or court order data changes.</p>
+{{ table(rows) }}
+{% endblock %}

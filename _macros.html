@@ -1,0 +1,20 @@
+{% macro table(rows) %}
+{% if rows %}
+<div class="table-responsive">
+<table class="table table-sm table-striped table-bordered bg-white align-middle">
+  <thead class="table-dark"><tr>{% for k in rows[0].keys() %}<th>{{ k }}</th>{% endfor %}</tr></thead>
+  <tbody>{% for r in rows %}<tr>{% for v in r.values() %}<td>{{ v if v is not none else '' }}</td>{% endfor %}</tr>{% endfor %}</tbody>
+</table>
+</div>
+{% else %}<p class="text-muted">No records yet.</p>{% endif %}
+{% endmacro %}
+
+{% macro select(name, items, required=True, placeholder='-- select --') %}
+<select class="form-select" name="{{ name }}" {% if required %}required{% endif %}>
+  <option value="">{{ placeholder }}</option>
+  {% for i in items %}
+    {% if i is mapping %}<option value="{{ i.v }}">{{ i.l }}</option>
+    {% else %}<option value="{{ i[0] }}">{{ i[1] }}</option>{% endif %}
+  {% endfor %}
+</select>
+{% endmacro %}

@@ -1,0 +1,62 @@
+{% extends "base.html" %}{% from "_macros.html" import table, select %}
+{% block content %}
+<a href="{{ url_for('property_list') }}">&larr; Back to register</a>
+<h3 class="mt-2">{{ p.malkhana_reg_no }}
+  <span class="badge text-bg-{{ 'success' if p.status=='IN_MALKHANA' else ('warning' if p.status.startswith('ISSUED') else 'secondary') }}">{{ p.status }}</span></h3>
+<div class="row">
+  <div class="col-md-6">
+    <table class="table table-sm bg-white table-bordered">
+      <tr><th width="35%">Description</th><td>{{ p.description }}</td></tr>
+      <tr><th>Category</th><td>{{ p.category }}</td></tr>
+      <tr><th>Quantity</th><td>{{ p.quantity }} {{ p.unit }}</td></tr>
+      <tr><th>Case</th><td>FIR {{ p.fir_no }} ({{ p.sections }}) - {{ p.station }}</td></tr>
+      <tr><th>Seizure memo</th><td>{{ p.seizure_memo_no }}</td></tr>
+      <tr><th>Seized on / by</th><td>{{ p.seized_on }} / {{ p.seized_by_name }}</td></tr>
+      <tr><th>Seized from</th><td>{{ p.seized_from or '' }}</td></tr>
+      <tr><th>Estimated value</th><td>{{ p.est_value or '' }}</td></tr>
+      <tr><th>Current location</th><td>{{ p.location }}</td></tr>
+      {% for k, v in sub.items() %}<tr class="table-info"><th>{{ k }}</th><td>{{ v if v is not none else '' }}</td></tr>{% endfor %}
+    </table>
+  </div>
+  <div class="col-md-6">
+    {% if actions %}
+    <div class="card card-body">
+      <h6>Move this property</h6>
+      <form method="post" action="{{ url_for('property_move', pid=p.property_id) }}">
+        <div class="row g-2">
+          <div class="col-md-6"><label class="form-label">Action *</label>
+            <select class="form-select" name="type" id="type" required>{% for a in actions %}<option>{{ a }}</option>{% endfor %}</select></div>
+          <div class="col-md-6"><label class="form-label">Authorised by *</label>{{ select('authorised_by', officers) }}</div>
+          <div class="col-md-6"><label class="form-label">Handed by *</label>{{ select('handed_by', officers) }}</div>
+          <div class="col-md-6"><label class="form-label">Received by</label>{{ select('received_by', officers, False) }}</div>
+          <div class="col-md-12 opt" data-for="RETURN,INTER_MALKHANA_TRANSFER"><label class="form-label">Put back into location *</label>{{ select('to_location', locations, False) }}</div>
+          <div class="col-md-12 opt" data-for="RELEASE_TO_OWNER,DISPOSAL"><label class="form-label">Court order * (add it first under Court Orders)</label>{{ select('order_id', orders, False) }}</div>
+          <div class="col-md-6 opt" data-for="ISSUE_TO_FSL"><label class="form-label">FSL lab *</label>{{ select('lab_id', labs, False) }}</div>
+          <div class="col-md-6 opt" data-for="ISSUE_TO_FSL"><label class="form-label">Purpose</label><input class="form-control" name="purpose"></div>
+          <div class="col-md-12 opt" data-for="DISPOSAL"><label class="form-label">Disposal method *</label>
+            <select class="form-select" name="method"><option value="">-- select --</option><option>DESTROYED</option><option>AUCTIONED</option><option>CONFISCATED_TO_STATE</option><option>HANDED_TO_OWNER</option></select></div>
+          <div class="col-12"><label class="form-label">Remarks</label><input class="form-control" name="remarks"></div>
+          <div class="col-12"><button class="btn btn-primary mt-2">Submit</button></div>
+        </div>
+      </form>
+    </div>
+    {% else %}
+    <div class="alert alert-secondary">This property is {{ p.status }} - no further movement is allowed.</div>
+    {% endif %}
+  </div>
+</div>
+<h5 class="mt-4">Chain of custody</h5>
+{{ table(history) }}
+{% endblock %}
+{% block scripts %}
+<script>
+const type = document.getElementById('type');
+function toggle() {
+  if (!type) return;
+  document.querySelectorAll('.opt').forEach(d => {
+    d.style.display = d.dataset.for.split(',').includes(type.value) ? '' : 'none';
+  });
+}
+if (type) { type.addEventListener('change', toggle); toggle(); }
+</script>
+{% endblock %}

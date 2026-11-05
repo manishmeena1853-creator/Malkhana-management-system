@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Property register</h3>
+<form class="row g-2 mb-3" method="get">
+  <div class="col-md-5"><input class="form-control" name="q" value="{{ q }}" placeholder="Search reg no, description, FIR, accused name"></div>
+  <div class="col-md-3">
+    <select class="form-select" name="status">
+      <option value="">All status</option>
+      {% for s in ['IN_MALKHANA','ISSUED_COURT','ISSUED_FSL','ISSUED_IO','RELEASED','DISPOSED'] %}
+      <option {% if s == status %}selected{% endif %}>{{ s }}</option>{% endfor %}
+    </select>
+  </div>
+  <div class="col-md-2"><button class="btn btn-primary">Filter</button> <a class="btn btn-outline-secondary" href="{{ url_for('property_list') }}">Clear</a></div>
+</form>
+<table class="table table-sm table-striped table-bordered bg-white">
+  <thead class="table-dark"><tr><th>Reg No</th><th>Category</th><th>Description</th><th>FIR</th><th>Status</th><th>Location</th><th></th></tr></thead>
+  <tbody>
+  {% for r in rows %}
+  <tr><td>{{ r.malkhana_reg_no }}</td><td>{{ r.category }}</td><td>{{ r.description }}</td><td>{{ r.fir_no }}</td>
+      <td><span class="badge text-bg-{{ 'success' if r.status=='IN_MALKHANA' else ('warning' if r.status.startswith('ISSUED') else 'secondary') }}">{{ r.status }}</span></td>
+      <td>{{ r.location }}</td>
+      <td><a class="btn btn-sm btn-outline-primary" href="{{ url_for('property_detail', pid=r.property_id) }}">Open</a></td></tr>
+  {% else %}<tr><td colspan="7" class="text-muted">No property found.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends "base.html" %}{% from "_macros.html" import select %}
+{% block content %}
+<h3>Register seized property and deposit in malkhana</h3>
+<form method="post" class="card card-body mb-4">
+  <h6>1. Seizure details</h6>
+  <div class="row g-2 mb-3">
+    <div class="col-md-4"><label class="form-label">Case (FIR) *</label>{{ select('case_id', cases) }}</div>
+    <div class="col-md-2"><label class="form-label">Seizure memo no *</label><input class="form-control" name="seizure_memo_no" required></div>
+    <div class="col-md-2"><label class="form-label">Category *</label>
+      <select class="form-select" name="category" id="category" required>{% for c in categories %}<option>{{ c }}</option>{% endfor %}</select></div>
+    <div class="col-md-4"><label class="form-label">Seized by *</label>{{ select('seized_by', officers) }}</div>
+    <div class="col-md-5"><label class="form-label">Description *</label><input class="form-control" name="description" required></div>
+    <div class="col-md-1"><label class="form-label">Qty</label><input class="form-control" name="quantity" value="1"></div>
+    <div class="col-md-1"><label class="form-label">Unit</label><input class="form-control" name="unit" value="pcs"></div>
+    <div class="col-md-2"><label class="form-label">Seized on *</label><input type="datetime-local" class="form-control" name="seized_on" value="{{ now }}" required></div>
+    <div class="col-md-3"><label class="form-label">Estimated value</label><input class="form-control" name="est_value"></div>
+    <div class="col-md-6"><label class="form-label">Seized from (place)</label><input class="form-control" name="seized_from"></div>
+  </div>
+
+  <h6>2. Category specific details</h6>
+  <div class="row g-2 mb-3">
+    <div class="sub col-12" data-cat="ARMS"><div class="row g-2">
+      <div class="col-md-3"><label class="form-label">Weapon type *</label><input class="form-control" name="a_weapon_type"></div>
+      <div class="col-md-3"><label class="form-label">Serial no</label><input class="form-control" name="a_serial_no"></div>
+      <div class="col-md-3"><label class="form-label">Caliber</label><input class="form-control" name="a_caliber"></div>
+      <div class="col-md-3"><label class="form-label">Rounds</label><input class="form-control" name="a_rounds"></div></div></div>
+    <div class="sub col-12" data-cat="NARCOTICS"><div class="row g-2">
+      <div class="col-md-3"><label class="form-label">Substance *</label><input class="form-control" name="n_substance"></div>
+      <div class="col-md-2"><label class="form-label">Gross wt (g) *</label><input class="form-control" name="n_gross"></div>
+      <div class="col-md-2"><label class="form-label">Net wt (g) *</label><input class="form-control" name="n_net"></div>
+      <div class="col-md-3"><label class="form-label">Quantity class</label>
+        <select class="form-select" name="n_class"><option value="">--</option><option>SMALL</option><option>INTERMEDIATE</option><option>COMMERCIAL</option></select></div>
+      <div class="col-md-2 pt-4"><input type="checkbox" class="form-check-input" name="n_sample"> Sample drawn</div></div></div>
+    <div class="sub col-12" data-cat="VEHICLE"><div class="row g-2">
+      <div class="col-md-3"><label class="form-label">Registration no</label><input class="form-control" name="v_reg_no"></div>
+      <div class="col-md-3"><label class="form-label">Chassis no</label><input class="form-control" name="v_chassis"></div>
+      <div class="col-md-3"><label class="form-label">Make / model</label><input class="form-control" name="v_model"></div>
+      <div class="col-md-3"><label class="form-label">Colour</label><input class="form-control" name="v_colour"></div></div></div>
+    <div class="sub col-12" data-cat="CASH_VALUABLES"><div class="row g-2">
+      <div class="col-md-3"><label class="form-label">Kind *</label>
+        <select class="form-select" name="c_kind"><option>CASH</option><option>GOLD</option><option>SILVER</option><option>JEWELLERY</option><option>OTHER</option></select></div>
+      <div class="col-md-3"><label class="form-label">Amount (Rs)</label><input class="form-control" name="c_amount"></div>
+      <div class="col-md-3"><label class="form-label">Weight (g)</label><input class="form-control" name="c_weight"></div></div></div>
+    <div class="sub col-12" data-cat="ELECTRONIC"><div class="row g-2">
+      <div class="col-md-3"><label class="form-label">Device type *</label><input class="form-control" name="e_type" placeholder="Mobile phone"></div>
+      <div class="col-md-4"><label class="form-label">Make / model</label><input class="form-control" name="e_model"></div>
+      <div class="col-md-4"><label class="form-label">IMEI / serial</label><input class="form-control" name="e_imei"></div></div></div>
+    <div class="sub col-12 text-muted" data-cat="OTHER">No extra details needed for this category.</div>
+  </div>
+
+  <h6>3. Deposit in malkhana</h6>
+  <div class="row g-2">
+    <div class="col-md-4"><label class="form-label">Storage location *</label>{{ select('location_id', locations) }}</div>
+    <div class="col-md-4"><label class="form-label">Received by (malkhana staff) *</label>{{ select('received_by', officers) }}</div>
+    <div class="col-md-4"><label class="form-label">Authorised by *</label>{{ select('authorised_by', officers) }}</div>
+  </div>
+  <div><button class="btn btn-success mt-3">Register and deposit</button></div>
+</form>
+{% endblock %}
+{% block scripts %}
+<script>
+const cat = document.getElementById('category');
+function toggle() {
+  document.querySelectorAll('.sub').forEach(d => d.style.display = (d.dataset.cat === cat.value) ? '' : 'none');
+}
+cat.addEventListener('change', toggle); toggle();
+</script>
+{% endblock %}
