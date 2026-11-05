@@ -1,7 +1,7 @@
 {% extends "base.html" %}{% from "_macros.html" import table, select %}
 {% block content %}
 <h3>Cases (FIR)</h3>
-<form method="post" class="card card-body mb-4">
+<form method="post" class="card card-body mb-4"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
   <div class="row g-2">
     <div class="col-md-3"><label class="form-label">Police station *</label>{{ select('station_id', stations) }}</div>
     <div class="col-md-2"><label class="form-label">FIR no *</label><input class="form-control" name="fir_no" placeholder="45/2026" required></div>
@@ -17,5 +17,13 @@
     <div class="col-12"><button class="btn btn-primary mt-2">Register case</button></div>
   </div>
 </form>
-{{ table(rows) }}
+{% if rows %}
+<div class="table-responsive">
+<table class="table table-sm table-striped table-bordered bg-white align-middle">
+  <thead class="table-dark"><tr>{% for k in rows[0].keys() %}<th>{{ k }}</th>{% endfor %}<th></th></tr></thead>
+  <tbody>{% for r in rows %}<tr>{% for v in r.values() %}<td>{{ v if v is not none else '' }}</td>{% endfor %}
+    <td><form method="post" action="{{ url_for('case_delete', cid=r['ID']) }}" onsubmit="return confirm('Delete this record? This cannot be undone.');"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-sm btn-outline-danger">Delete</button></form></td></tr>{% endfor %}</tbody>
+</table>
+</div>
+{% else %}<p class="text-muted">No records yet.</p>{% endif %}
 {% endblock %}

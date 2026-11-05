@@ -48,6 +48,34 @@ Running it again resets the demo data.
 | `could not connect to server` | PostgreSQL is not running. Start it (Services > postgresql). |
 | `No module named flask` | Run `pip install -r requirements.txt` |
 
+## Login and security
+The app has a login page. Demo accounts (**for the demo database only, change them for real use**):
+
+| Username | Password | Role | Can do |
+|---|---|---|---|
+| `admin` | `Admin@123` | ADMIN | everything, including users, master data and deletes |
+| `rajesh` | `Sho@12345` | SHO | register property, move property, cases, court orders, audit log |
+| `vikram` | `Store@12345` | MALKHANA_INCHARGE | register and move property |
+| `anita` | `Io@12345` | INVESTIGATING_OFFICER | register cases, view everything else |
+
+Other roles: `MALKHANA_CLERK`, `COURT_LIAISON`, `AUDITOR` (read-only plus audit log).
+The admin can create users under **Users**; everyone can change their password under **Password**.
+
+Security measures:
+- Passwords are stored only as salted hashes (never as plain text)
+- Role-based access control: each action checks the logged-in user's role
+- CSRF token on every form (blocks forged requests from other websites)
+- All SQL uses parameters (protects against SQL injection)
+- Lock-out for 1 minute after 5 wrong passwords
+- Every change is written to the audit log together with the user who made it
+- Database-level rules (CHECK constraints and triggers) apply even if the app is bypassed
+- No secrets in the code: database password is typed at start-up or read from `DB_PASSWORD`;
+  set `SECRET_KEY` as an environment variable for a fixed session key
+- Debug mode is off by default
+
+Known limits (future scope): HTTPS must be provided by the hosting server, no two-factor login,
+no password-reset by email.
+
 ## How to understand the project
 1. Read the **Project structure** above.
 2. Open `database/schema.sql` to see the tables and rules (CHECK constraints and triggers).

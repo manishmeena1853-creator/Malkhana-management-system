@@ -22,7 +22,7 @@
     {% if actions %}
     <div class="card card-body">
       <h6>Move this property</h6>
-      <form method="post" action="{{ url_for('property_move', pid=p.property_id) }}">
+      <form method="post" action="{{ url_for('property_move', pid=p.property_id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <div class="row g-2">
           <div class="col-md-6"><label class="form-label">Action *</label>
             <select class="form-select" name="type" id="type" required>{% for a in actions %}<option>{{ a }}</option>{% endfor %}</select></div>
@@ -47,6 +47,12 @@
 </div>
 <h5 class="mt-4">Chain of custody</h5>
 {{ table(history) }}
+<div class="card border-danger mt-4 mb-4"><div class="card-body">
+  <h6 class="text-danger">Delete this property</h6>
+  <p class="small mb-2">Removes the item and its whole custody history. A copy of every deleted row is kept in the Audit Log. Use only for entries made by mistake.</p>
+  <form method="post" action="{{ url_for('property_delete', pid=p.property_id) }}" onsubmit="return confirm('Delete {{ p.malkhana_reg_no }} and its custody history? A copy is kept in the Audit Log.');"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button class="btn btn-outline-danger btn-sm">Delete property</button></form>
+</div></div>
 {% endblock %}
 {% block scripts %}
 <script>

@@ -1,7 +1,7 @@
 {% extends "base.html" %}{% from "_macros.html" import table %}
 {% block content %}
 <h3>{{ m.title }}</h3>
-<form method="post" class="card card-body mb-4">
+<form method="post" class="card card-body mb-4"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
   <div class="row g-2">
     {% for f in fields %}
     <div class="col-md-3">
@@ -19,5 +19,13 @@
     <div class="col-md-12"><button class="btn btn-primary mt-2">Save</button></div>
   </div>
 </form>
-{{ table(rows) }}
+{% if rows %}
+<div class="table-responsive">
+<table class="table table-sm table-striped table-bordered bg-white align-middle">
+  <thead class="table-dark"><tr>{% for k in rows[0].keys() %}<th>{{ k }}</th>{% endfor %}<th></th></tr></thead>
+  <tbody>{% for r in rows %}<tr>{% for v in r.values() %}<td>{{ v if v is not none else '' }}</td>{% endfor %}
+    <td><form method="post" action="{{ url_for('master_delete', key=key, rid=r[m.pk]) }}" onsubmit="return confirm('Delete this record? This cannot be undone.');"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-sm btn-outline-danger">Delete</button></form></td></tr>{% endfor %}</tbody>
+</table>
+</div>
+{% else %}<p class="text-muted">No records yet.</p>{% endif %}
 {% endblock %}

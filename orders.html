@@ -2,7 +2,7 @@
 {% block content %}
 <h3>Court Orders</h3>
 <p class="text-muted">A court order is required before property can be released to the owner or disposed.</p>
-<form method="post" class="card card-body mb-4">
+<form method="post" class="card card-body mb-4"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
   <div class="row g-2">
     <div class="col-md-3"><label class="form-label">Court *</label>{{ select('court_id', courts) }}</div>
     <div class="col-md-3"><label class="form-label">Order no *</label><input class="form-control" name="order_no" required></div>
@@ -17,5 +17,13 @@
     <div class="col-12"><button class="btn btn-primary mt-2">Save order</button></div>
   </div>
 </form>
-{{ table(rows) }}
+{% if rows %}
+<div class="table-responsive">
+<table class="table table-sm table-striped table-bordered bg-white align-middle">
+  <thead class="table-dark"><tr>{% for k in rows[0].keys() %}<th>{{ k }}</th>{% endfor %}<th></th></tr></thead>
+  <tbody>{% for r in rows %}<tr>{% for v in r.values() %}<td>{{ v if v is not none else '' }}</td>{% endfor %}
+    <td><form method="post" action="{{ url_for('order_delete', oid=r['ID']) }}" onsubmit="return confirm('Delete this record? This cannot be undone.');"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-sm btn-outline-danger">Delete</button></form></td></tr>{% endfor %}</tbody>
+</table>
+</div>
+{% else %}<p class="text-muted">No records yet.</p>{% endif %}
 {% endblock %}

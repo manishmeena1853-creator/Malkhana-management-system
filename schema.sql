@@ -360,6 +360,11 @@ CREATE TABLE audit_log (
 -- 9a. Custody ledger is immutable
 CREATE OR REPLACE FUNCTION fn_block_txn_change() RETURNS trigger AS $$
 BEGIN
+  -- the app may delete a mistaken property together with its history
+  -- (it sets malkhana.allow_cleanup = 'on' and writes a copy to audit_log first)
+  IF TG_OP = 'DELETE' AND current_setting('malkhana.allow_cleanup', true) = 'on' THEN
+    RETURN OLD;
+  END IF;
   RAISE EXCEPTION 'custody_txn is append-only; corrections need a new entry';
 END; $$ LANGUAGE plpgsql;
 

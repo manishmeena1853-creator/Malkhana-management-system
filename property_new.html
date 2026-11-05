@@ -1,7 +1,7 @@
 {% extends "base.html" %}{% from "_macros.html" import select %}
 {% block content %}
 <h3>Register seized property and deposit in malkhana</h3>
-<form method="post" class="card card-body mb-4">
+<form method="post" class="card card-body mb-4"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
   <h6>1. Seizure details</h6>
   <div class="row g-2 mb-3">
     <div class="col-md-4"><label class="form-label">Case (FIR) *</label>{{ select('case_id', cases) }}</div>

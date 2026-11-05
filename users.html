@@ -1,0 +1,16 @@
+{% extends "base.html" %}{% from "_macros.html" import table, select %}
+{% block content %}
+<h3>Users and roles</h3>
+<p class="text-muted">Each user is linked to one officer. Passwords are stored only as secure hashes.</p>
+<form method="post" class="card card-body mb-4"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="row g-2">
+    <div class="col-md-3"><label class="form-label">Officer (without account) *</label>{{ select('officer_id', officers) }}</div>
+    <div class="col-md-2"><label class="form-label">Username *</label><input class="form-control" name="username" required></div>
+    <div class="col-md-3"><label class="form-label">Role *</label>
+      <select class="form-select" name="role" required>{% for r in roles %}<option>{{ r }}</option>{% endfor %}</select></div>
+    <div class="col-md-2"><label class="form-label">Password * (min 8)</label><input type="password" class="form-control" name="password" required></div>
+    <div class="col-md-2 pt-4"><button class="btn btn-primary mt-1">Create user</button></div>
+  </div>
+</form>
+{{ table(rows) }}
+{% endblock %}

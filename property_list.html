@@ -19,7 +19,8 @@
   <tr><td>{{ r.malkhana_reg_no }}</td><td>{{ r.category }}</td><td>{{ r.description }}</td><td>{{ r.fir_no }}</td>
       <td><span class="badge text-bg-{{ 'success' if r.status=='IN_MALKHANA' else ('warning' if r.status.startswith('ISSUED') else 'secondary') }}">{{ r.status }}</span></td>
       <td>{{ r.location }}</td>
-      <td><a class="btn btn-sm btn-outline-primary" href="{{ url_for('property_detail', pid=r.property_id) }}">Open</a></td></tr>
+      <td class="text-nowrap"><a class="btn btn-sm btn-outline-primary" href="{{ url_for('property_detail', pid=r.property_id) }}">Open</a>
+      <form method="post" action="{{ url_for('property_delete', pid=r.property_id) }}" class="d-inline" onsubmit="return confirm('Delete {{ r.malkhana_reg_no }} and its custody history? A copy is kept in the Audit Log.');"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-sm btn-outline-danger">Delete</button></form></td></tr>
   {% else %}<tr><td colspan="7" class="text-muted">No property found.</td></tr>
   {% endfor %}
   </tbody>
